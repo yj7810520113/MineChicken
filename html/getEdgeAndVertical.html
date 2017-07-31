@@ -1,0 +1,131 @@
+<!--
+ * Created by WebStorm
+ * User:maomao,http://www.mmcode.top
+ * Date:2017/7/18
+ * Time:10:57
+ -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>testD3-22-force.html</title>
+    <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="../assets/js/jquery.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body>
+<script type="text/javascript">
+    var h = 600;
+    var w = 1300;
+    // 颜色函数
+    var colors = d3.scale.category20()//创建序数比例尺和包括20中颜色的输出范围
+
+    var n = 0;//n表示为节点的标号
+    var EdgeVerticalMap = new Map();
+    var EdgePropertyMap = new Map();
+    var lineCount = 0;
+
+
+    $.get('../data/gy_contest_link_info.txt', function (d) {
+        var ls = d.split('\n');
+        for (let eles of ls) {
+            var ele = eles.split(';');
+            EdgePropertyMap.set(ele[0], ele[1]);
+        }
+        console.log(EdgePropertyMap);
+    });
+
+
+    $.get('../data/gy_contest_link_top(20170715更新).txt', function (d) {
+
+        var lines = d.split('\n');
+        for (let line of lines) {
+            if (lineCount++ == 0) {
+                continue;
+            }
+            var nodes = line.split(';');
+            for (var i = 0; i < 3; i++) {
+//                i=0为当前节点   i=1为in_links  i=2为out_links
+                var this_link = nodes[0];
+                var in_linkss = nodes[1];
+                var out_linkss = nodes[2];
+//                不包含则添加节点
+                if (!EdgeVerticalMap.has(this_link)) {
+                    EdgeVerticalMap.set(this_link, {source: ++n, target: ++n});
+                }
+//                包含则取出节点值
+                else {
+//                    判断节点的source和target是否完整
+                    if (EdgeVerticalMap.get(this_link)['source'] == undefined) {
+//                        说明source不完整
+                        EdgeVerticalMap.set(this_link, Object.assign(EdgeVerticalMap.get(this_link)['target'] == undefined ? {} : {target: EdgeVerticalMap.get(this_link)['target']}, {source: ++n}));
+                    }
+                    if (EdgeVerticalMap.get(this_link)['target'] == undefined) {
+//                        说明target不完整
+                        EdgeVerticalMap.set(this_link, Object.assign(EdgeVerticalMap.get(this_link)['source'] == undefined ? {} : {source: EdgeVerticalMap.get(this_link)['source']}, {target: ++n}));
+                    }
+                    var source = EdgeVerticalMap.get(this_link)['source'];
+                    var target = EdgeVerticalMap.get(this_link)['target'];
+
+                    if (in_linkss != '') {
+//                        console.log(in_linkss);
+                        var in_links = in_linkss.split('#');
+
+//                    判断是否有in_links
+                        for (let in_link of in_links) {
+                            if (!EdgeVerticalMap.has(in_link)) {
+                                EdgeVerticalMap.set(in_link, {});
+                            }
+                            EdgeVerticalMap.set(in_link, Object.assign(EdgeVerticalMap.get(in_link)['source'] == undefined ? {} : {source: EdgeVerticalMap.get(in_link)['source']}, {target: source}));
+                        }
+                    }
+                    if (out_linkss != '') {
+                        var out_links = out_linkss.split('#');
+
+//                    判断是否有out_links
+                        for (let out_link of out_links) {
+                            if (!EdgeVerticalMap.has(out_link)) {
+                                EdgeVerticalMap.set(out_link, {});
+                            }
+                            EdgeVerticalMap.set(out_link, Object.assign(EdgeVerticalMap.get(out_link)['target'] == undefined ? {} : {target: EdgeVerticalMap.get(out_link)['target']}, {source: target}));
+                        }
+                    }
+                }
+
+
+            }
+        }
+        console.log(EdgeVerticalMap);
+
+
+        var sourceTargetstr='';
+        for(let nodeKey of EdgeVerticalMap){
+            sourceTargetstr+=nodeKey[1].source+'->'+nodeKey[1].target+',';
+        }
+        console.log(sourceTargetstr);
+        var edgeLengthStr='';
+        for(let nodeKey of EdgeVerticalMap) {
+            edgeLengthStr+=EdgePropertyMap.get(nodeKey[0])+',';
+        }
+        console.log(edgeLengthStr);
+        console.log(sourceTargetstr.split(',').length+'  '+edgeLengthStr.split(',').length);
+    });
+</script>
+<input type="text"><button onclick="getRoadId()">获取id</button>
+<script>
+    function getRoadId() {
+//        获取target和source
+        var source=$('input').val().split(',')[0];
+        var target=$('input').val().split(',')[1];
+        for(let ele of EdgeVerticalMap){
+            if(ele[1].source==source&&ele[1].target==target){
+                console.log(ele[0]);
+            }
+        }
+        
+
+    }
+</script>
+</body>
+</html>

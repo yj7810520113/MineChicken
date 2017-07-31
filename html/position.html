@@ -1,0 +1,61 @@
+<!--
+ * Created by WebStorm
+ * User:maomao,http://www.mmcode.top
+ * Date:2017/7/26
+ * Time:17:18
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .div1{
+            /*height: 200px;*/
+            /*width: 200px;*/
+            margin: 200px;
+            background-color: red;
+        }
+        .div2{
+            float:left;
+            height: 100px;
+            width: 100px;
+            position:relative;
+            /*left:100px;*/
+            background-color: blue;
+        }
+        .div3{
+            /*position: relative;*/
+            background: yellow;
+            left:100px;
+            height: 100px;
+            width: 100px;
+        }
+        .div4{
+            position: absolute;
+            background: grey;
+            left:100px;
+            /*top:50px;*/
+            height: 100px;
+            width: 100px;
+            transition:all 0.2s ease-in-out;
+
+        }
+        .div4:hover{
+            background: red;
+            height:200px;
+            width:200px;
+        }
+    </style>
+</head>
+<body>
+<div class="div1">
+    <div class="div2">
+        <div class="div3">
+            <div class="div4"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

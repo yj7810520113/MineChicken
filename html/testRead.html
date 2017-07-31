@@ -1,0 +1,272 @@
+<!--
+ * Created by WebStorm
+ * User:maomao,http://www.mmcode.top
+ * Date:2017/7/17
+ * Time:10:47
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../assets/js/jquery.js"></script>
+</head>
+<body>
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .node {
+        stroke: #000;
+        stroke-width: 1.5px;
+    }
+
+    .link {
+        stroke: #999;
+        stroke-width: 1.5px;
+    }
+
+</style>
+<svg width="1300" height="600"></svg>
+<script src="../assets/js/D3.V4.js"></script>
+<script>
+
+
+</script>
+
+<script>
+    let lengthSet=new Set();
+    $.get('../data/gy_contest_link_info.txt', function (d) {
+        var lines=d.split('\n');
+        console.log(lines)
+        for(let line of lines){
+            var ele=line.split(';');
+            lengthSet.add(ele[0].replace(/\d{9}(.{4})\d{6}/g,'$1'));
+        }
+        console.log(lengthSet);
+
+    });
+
+
+    let nodes = [];
+    let links = [];
+    let graph = {};
+
+
+    $.get('../data/gy_contest_link_top(20170715更新).txt', function (d) {
+        let linkSets = new Set();
+        let in_linkSets = new Set();
+        let out_linkSets = new Set();
+
+
+        let lines = d.split('\n');
+        for (let line = 1; line < lines.length; line++) {
+            if (lines[line] == '') {
+                continue;
+            }
+            else {
+                let node = lines[line].split(';');//获取每个节点的信息以及出度和入度信息
+                let link_id = node[0];
+                nodes.push({id: link_id})
+                linkSets.add(link_id);
+                let in_links = node[1].split('#');
+                in_linkSets.add(in_links);
+                for (let in_link of in_links) {
+                    if (in_link != '') {
+                        links.push({source: in_link, target: link_id});
+                    }
+                }
+                let out_links = node[2].split('#');
+                out_linkSets.add(out_links);
+                for (let out_link of out_links) {
+                    if (out_link != '') {
+                        links.push({source: link_id, target: out_link})
+                    }
+                }
+            }
+
+        }
+
+        graph =JSON.parse(JSON.stringify({nodes: nodes, links: links}));
+        console.log(graph);
+
+
+//        -------------------------------------------------------------------------
+//        生成图形
+
+        var svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+        var simulation = d3.forceSimulation()
+//            .force("charge", d3.forceManyBody())
+            .force("link", d3.forceLink().id(function (d) {
+                console.log(d);
+                return d.id;
+            }).distance(function(d){
+                console.log(d);
+                return 300*Math.random()
+            }))
+            .force("center",d3.forceCenter(width/2,height/2))
+//            .force("x", d3.forceX(width / 2))
+//            .force("y", d3.forceY(height / 2))
+            .on("tick", ticked);
+
+        var link = svg.selectAll(".link"),
+            node = svg.selectAll(".node");
+
+//        console.log(graph);
+//        console.log(graph['nodes']);
+
+        simulation.nodes(graph.nodes);
+        simulation.force("link").links(graph.links);
+
+        link = link
+            .data(graph.links)
+            .enter().append("line")
+            .attr("class", "link");
+
+        node = node
+            .data(graph.nodes)
+            .enter().append("circle")
+            .attr("class", "node")
+            .attr("r", 6)
+            .style("fill", function (d) {
+                return 'black';
+            });
+
+
+        function ticked() {
+            link.attr("x1", function (d) {
+                return d.source.x;
+            })
+                .attr("y1", function (d) {
+                    return d.source.y;
+                })
+                .attr("x2", function (d) {
+                    return d.target.x;
+                })
+                .attr("y2", function (d) {
+                    return d.target.y;
+                });
+
+            node.attr("cx", function (d) {
+                return d.x;
+            })
+                .attr("cy", function (d) {
+                    return d.y;
+                });
+        }
+    });
+</script>
+
+<!--<script type="text/javascript">-->
+    <!--var h=300;-->
+    <!--var w=300;-->
+    <!--// 颜色函数-->
+    <!--var colors=d3.scaleOrdinal(d3.schemeCategory20)//创建序数比例尺和包括20中颜色的输出范围-->
+
+    <!--//(1)定义节点和联系对象数组-->
+    <!--var dataset={-->
+        <!--nodes:[//节点-->
+            <!--{ name:"Adam"},-->
+            <!--{ name:"Bob"},-->
+            <!--{ name:"Carride"},-->
+            <!--{ name:"Donovan"},-->
+            <!--{ name:"Edward"},-->
+            <!--{ name:"Felicity"},-->
+            <!--{ name:"George"},-->
+            <!--{ name:"Hannah"},-->
+            <!--{ name:"Iris"},-->
+            <!--{ name:"Jerry"}-->
+        <!--],-->
+        <!--edges:[//边-->
+            <!--{ source:0,target:1,weight:1,color:1},-->
+            <!--{ source:0,target:2,weight:3,color:4},-->
+            <!--{ source:0,target:3,weight:4,color:6},-->
+            <!--{ source:0,target:4,weight:6,color:65},-->
+            <!--{ source:1,target:5,weight:3,color:76},-->
+            <!--{ source:2,target:5,weight:8,color:879},-->
+            <!--{ source:2,target:5,weight:7,color:989},-->
+            <!--{ source:3,target:4,weight:9,color:643},-->
+            <!--{ source:5,target:8,weight:1,color:54},-->
+            <!--{ source:5,target:9,weight:3,color:54},-->
+            <!--{ source:6,target:7,weight:4,color:45},-->
+            <!--{ source:7,target:8,weight:0,color:43},-->
+            <!--{ source:2,target:8,weight:8,color:243},-->
+            <!--{ source:3,target:8,weight:1,color:43},-->
+            <!--{ source:5,target:8,weight:5,color:13},-->
+            <!--{ source:6,target:8,weight:3,color:351},-->
+            <!--{ source:8,target:9,weight:4,color:1}-->
+        <!--]-->
+    <!--};-->
+
+    <!--//(2)转化数据为适合生成力导向图的对象数组-->
+    <!--var force=d3.forceSimulation()-->
+        <!--.nodes(dataset.nodes)//加载节点数据-->
+        <!--.links(dataset.edges)//加载边数据-->
+        <!--.size([w,h])//设置有效空间的大小-->
+        <!--.linkDistance(50)//连线的长度-->
+        <!--.charge(-200)//负电荷量，相互排斥设置的负值越大越排斥-->
+        <!--.start();//设置生效-->
+
+    <!--var svg=d3.select("body")-->
+        <!--.append("svg")-->
+        <!--.attr("width",w)-->
+        <!--.attr("height",h);-->
+
+    <!--//(3)创建作为连线的svg直线-->
+    <!--var edges=svg.selectAll("line")-->
+        <!--.data(dataset.edges)-->
+        <!--.enter()-->
+        <!--.append("line")-->
+        <!--.style("stroke",function(d){//  设置线的颜色-->
+            <!--return colors(d.color);-->
+        <!--})-->
+        <!--.style("stroke-width",function(d,i){//设置线的宽度-->
+            <!--return d.weight;-->
+        <!--});-->
+
+    <!--//(4) 创建作为连线的svg圆形-->
+    <!--var nodes=svg.selectAll("circle")-->
+        <!--.data(dataset.nodes)-->
+        <!--.enter()-->
+        <!--.append("circle")-->
+        <!--.attr("r",function(d){//设置圆点的半径，圆点的度越大weight属性值越大，可以对其做一点数学变换-->
+            <!--return Math.log(d.weight)*10;-->
+        <!--})-->
+        <!--.style("fill",function(d){-->
+            <!--return colors(d.weight*d.weight*d.weight);-->
+        <!--})-->
+        <!--.call(force.drag);//可以拖动-->
+
+    <!--//(5)打点更新，没有的话就显示不出来了-->
+    <!--force.on("tick",function(){-->
+        <!--//边-->
+        <!--edges.attr("x1",function(d){-->
+            <!--return  d.source.x;-->
+        <!--})-->
+            <!--.attr("y1",function(d){-->
+                <!--return  d.source.y;-->
+            <!--})-->
+            <!--.attr("x2",function(d){-->
+                <!--return  d.target.x;-->
+            <!--})-->
+            <!--.attr("y2",function(d){-->
+                <!--return  d.target.y;-->
+            <!--});-->
+
+        <!--//节点-->
+        <!--nodes.attr("cx",function(d){-->
+            <!--return d.x;-->
+        <!--})-->
+            <!--.attr("cy",function(d){-->
+                <!--return d.y;-->
+            <!--});-->
+
+    <!--})-->
+<!--</script>-->
+</body>
+</html>
