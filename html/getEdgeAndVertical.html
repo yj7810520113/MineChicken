@@ -112,7 +112,10 @@
         console.log(sourceTargetstr.split(',').length+'  '+edgeLengthStr.split(',').length);
     });
 </script>
-<input type="text"><button onclick="getRoadId()">获取id</button>
+<input type="text"><button onclick="getRoadId()">根据source和target获取id</button>
+<span id="roadId"></span>
+<input type="text"><button onclick="getRoadLength()">根据source和target获取id</button>
+<span id="roadLength"></span>
 <script>
     function getRoadId() {
 //        获取target和source
@@ -120,7 +123,7 @@
         var target=$('input').val().split(',')[1];
         for(let ele of EdgeVerticalMap){
             if(ele[1].source==source&&ele[1].target==target){
-                console.log(ele[0]);
+                $('#roadId').text(ele[0]);
             }
         }
         
