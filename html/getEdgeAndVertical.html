@@ -112,22 +112,31 @@
         console.log(sourceTargetstr.split(',').length+'  '+edgeLengthStr.split(',').length);
     });
 </script>
-<input type="text"><button onclick="getRoadId()">根据source和target获取id</button>
+<input id="in1" type="text"><button onclick="getRoadId()">根据source和target获取id</button>
 <span id="roadId"></span>
-<input type="text"><button onclick="getRoadLength()">根据source和target获取id</button>
+<input id="in2" type="text"><button onclick="getRoadLength()">根据id获取source和target</button>
 <span id="roadLength"></span>
 <script>
     function getRoadId() {
 //        获取target和source
-        var source=$('input').val().split(',')[0];
-        var target=$('input').val().split(',')[1];
+        var source=$('#in1').val().split(/,|，|\./)[0];
+        var target=$('#in1').val().split(/,|，|\./)[1];
         for(let ele of EdgeVerticalMap){
             if(ele[1].source==source&&ele[1].target==target){
-                $('#roadId').text(ele[0]);
+                console.log(ele[0]);
+                $('#roadId').text(ele[0].replace(/\d{9}(\d{4})\d{6}/g,'$1'));
             }
         }
         
 
+    }
+    function getRoadLength() {
+        for(let ele of EdgeVerticalMap){
+            if(ele[0]==$('#in2').val()){
+                console.log(ele[0]);
+                $('#roadId').text(ele[1].source+','+ele[1].target)
+            }
+        }
     }
 </script>
 </body>
