@@ -498,13 +498,14 @@ $.get('../data/gy_contest_link_info.txt', function (d) {
 });
 
 d3.csv('../data/data.csv',function(error,data){
-    let timeMap=new Map();
-    var m=d3.map(data,function (d) {
+//    let timeMap=new Map();
+    var timeMap=d3.map(data,function (d) {
         return d.time;
     })
-    console.log(m);
+//    console.log(m);
     let getDataInterval=function (mapKey) {
-        let link_id=m.get(mapKey)['link_id'].substring(0,1)+"_"+m.get(mapKey)['link_id'];
+        console.log(timeMap.get(mapKey));
+        let link_id=timeMap.get(mapKey)['link_id'].substring(0,1)+"_"+timeMap.get(mapKey)['link_id'];
 
 //            $(this).children(':first').attr("stroke-linecap","butt");
                     $('g[id*='+link_id+']').children(':first').attr("stroke","black");
@@ -514,12 +515,15 @@ d3.csv('../data/data.csv',function(error,data){
             }
 
 
-    console.log(m);
-    for(let str of m.keys()){
-
-        setTimeout(getDataInterval(str),1000);
-
-    }
+    console.log(timeMap);
+    let count=0;
+    timeMap.each(function (d,t,i) {
+        count++;
+//        console.log(d);
+//        console.log(t);
+//        console.log(i);
+        function(){setTimeout(getDataInterval(t),count*1000);
+    })
 //    for(let ele of m){
 //    }
 })
