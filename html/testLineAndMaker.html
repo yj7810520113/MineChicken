@@ -498,32 +498,61 @@ $.get('../data/gy_contest_link_info.txt', function (d) {
 });
 
 d3.csv('../data/data.csv',function(error,data){
-//    let timeMap=new Map();
+    let tMap=new Map();
     var timeMap=d3.map(data,function (d) {
         return d.time;
-    })
+    });
+    function strMapToObj(strMap) {
+        let obj = Object.create(null);
+        for (let [k,v] of strMap) {
+            obj[k] = v;
+        }
+        return obj;
+    }
+
+    var expensesByName = d3.nest()
+        .key(function(d) { return d.time; })
+        .sortKeys(d3.ascending)
+        .entries(data);
+    console.log(expensesByName)
+
+
+    console.log(tMap)
 //    console.log(m);
-    let getDataInterval=function (mapKey) {
-        console.log(timeMap.get(mapKey));
-        let link_id=timeMap.get(mapKey)['link_id'].substring(0,1)+"_"+timeMap.get(mapKey)['link_id'];
+//    function getDataInterval(timeEle) {
+////        console.log(timeMap.get(timeEle));
+////        console.log(timeEle)
+//        timeEle['values'].forEach(function (d,i) {
+//            let link_id=d['link_id'].substring(0,1)+"_"+d['link_id'].substring(1,4);
+////            console.log(link_id)
+////            $(this).children(':first').attr("stroke-linecap","butt");
+//            $('g[id*="'+link_id+'"]').children(':first').attr("stroke","black");
+//        })
 
-//            $(this).children(':first').attr("stroke-linecap","butt");
-                    $('g[id*='+link_id+']').children(':first').attr("stroke","black");
 
 
 
-            }
+//    }
 
 
-    console.log(timeMap);
-    let count=0;
-    timeMap.each(function (d,t,i) {
-        count++;
-//        console.log(d);
-//        console.log(t);
-//        console.log(i);
-        function(){setTimeout(getDataInterval(t),count*1000);
-    })
+////    console.log(timeMap);
+//    let count=0;
+//    expensesByName.forEach(function (d,t,i) {
+//        count++;
+////        console.log(count);
+////        console.log(d);
+////        console.log(t);
+////        console.log(i);
+//        d3.interval(function(d){
+//
+//            d['values'].forEach(function (d,i) {
+//                let link_id=d['link_id'].substring(0,1)+"_"+d['link_id'].substring(1,4);
+////            console.log(link_id)
+////            $(this).children(':first').attr("stroke-linecap","butt");
+//                $('g[id*="'+link_id+'"]').children(':first').attr("stroke","black");
+//            })
+//        },1000)
+//    })
 //    for(let ele of m){
 //    }
 })
