@@ -14,7 +14,7 @@
     <style type="text/css">
     </style>
 </head>
-<body>
+<body >
 <script type="text/javascript">
     var h = 600;
     var w = 1300;
@@ -45,7 +45,7 @@
                 continue;
             }
             var nodes = line.split(';');
-            for (var i = 0; i < 3; i++) {
+//            for (var i = 0; i < 3; i++) {
 //                i=0为当前节点   i=1为in_links  i=2为out_links
                 var this_link = nodes[0];
                 var in_linkss = nodes[1];
@@ -55,7 +55,7 @@
                     EdgeVerticalMap.set(this_link, {source: ++n, target: ++n});
                 }
 //                包含则取出节点值
-                else {
+//                else {
 //                    判断节点的source和target是否完整
                     if (EdgeVerticalMap.get(this_link)['source'] == undefined) {
 //                        说明source不完整
@@ -91,11 +91,11 @@
                             EdgeVerticalMap.set(out_link, Object.assign(EdgeVerticalMap.get(out_link)['target'] == undefined ? {} : {target: EdgeVerticalMap.get(out_link)['target']}, {source: target}));
                         }
                     }
-                }
+//                }
 
 
             }
-        }
+//        }
         console.log(EdgeVerticalMap);
 
 
@@ -135,6 +135,10 @@
             if(ele[0]==$('#in2').val()){
                 console.log(ele[0]);
                 $('#roadId').text(ele[1].source+','+ele[1].target)
+            }
+            if(ele[0].replace(/\d{9}(\d{4})\d{6}/,'$1')==$('#in2').val()){
+                console.log(ele[0]);
+                $('#roadId').text(ele[0]+":"+ele[1].source+','+ele[1].target)
             }
         }
     }
