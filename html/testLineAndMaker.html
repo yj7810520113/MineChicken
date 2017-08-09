@@ -31,9 +31,9 @@
     <svg height="900px" width="1300px" style="margin-left: 100px;margin-top: 100px;background:rgba(63,94,181,0.9)"  >
 
     <defs>
-        <marker id="arrow" viewBox="0 0 10 10" refX="-30" refY="5" markerWidth="4" markerHeight="4" orient="auto" markerUnits="userSpaceOnUse">
+        <marker id="arrow" viewBox="0 0 10 10" refX="-20" refY="5" markerWidth="6" markerHeight="6" orient="auto" markerUnits="userSpaceOnUse">
             <!--<line x1="0" y1="10" x2="10" y2="5" stroke="black" stroke-width="2" stroke-linecap="round" fill="none"/>-->
-            <path d="M0,0 L0,1 L8,5 L0,9 L0,10 L10,5 z" fill="#fff" />
+            <path d="M0,0 L0,3 L6,5 L0,7 L0,10 L10,5 z" fill="#fff" />
         </marker>
 
         <marker id="roadEnd" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="6" markerHeight="6" orient="auto" markerUnits="userSpaceOnUse">
@@ -491,7 +491,7 @@ $.get('../data/gy_contest_link_info.txt', function (d) {
 });
 
 //d3.csv('../data/data.csv',function(error,data){
-d3.csv('../data/data4.27.csv',function(error,data){
+d3.csv('../data/data_offset3.3.csv',function(error,data){
     console.log(data);
     let tMap=new Map();
     var timeMap=d3.map(data,function (d) {
@@ -514,22 +514,47 @@ d3.csv('../data/data4.27.csv',function(error,data){
     let count=0
 
 
-    var sequentialScale = d3.scaleSequential()
-        .domain([0, 20])
-        .interpolator(d3.interpolateHsl('#e51c23','#fff'));
+//        var sequentialScale = d3.scaleSequential()
+//        .domain([-1,0, 1])
+//        .interpolator(d3.interpolateHsl('#e51c23','#fff'));
 
-//    console.log(sequentialScale(10))
+//    var  sequentialScale=d3.scaleBand()
+//        .domain([-1,0,0.2,0.55,0.7,1])
+//        .range(['#42bd41','#f ff176','#ffb74d','#ff8a65','#e84e40'])
+
+    function sequentialScale(x) {
+        if(x<=0){
+            return '#42bd41';
+        }
+        else if(x<=0.2)
+            return '#fff176';
+        else if(x<=0.55)
+            return '#ffb74d';
+        else if(x<=0.7)
+            return '#ff8a65';
+        else if(x<=1){
+            return '#e84e40';
+        }
+    }
+
+    console.log(sequentialScale(0.9))
+//    console.log(sequentialScale-(10))
     setInterval(function () {
         $('#dayTime').text((sortByKey[count])['key']);
         (sortByKey[count])['values'].forEach(function (d,i) {
                 let link_id=d['link_id'].substring(0,1)+"_"+d['link_id'].substring(1,4);
 //            console.log(link_id)
 //            $(this).children(':first').attr("stroke-linecap","butt");
-                $('g[id*="'+link_id+'"]').children(':first').attr("stroke",sequentialScale(d['speed']));
+//                $('g[id*="'+link_id+'"]').children(':first').attr("stroke",sequentialScale(d['speed']));
+//            console.log(d3.select('g[id*="'+link_id+'"]'));
+            var t = d3.transition()
+                .duration(300)
+                .ease(d3.easeExpInOut);
+                d3.select('g[id*="'+link_id+'"] >line').transition(t).attr('stroke',sequentialScale(d['speed']))
             })
 //        console.log(count);
         count++;
-    },200)
+    },300)
 
 
 
