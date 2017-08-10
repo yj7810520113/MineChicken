@@ -110,7 +110,9 @@
             .range([height, 0]);
 
         var xAxis = d3.axisBottom()
-            .scale(x);
+            .scale(x)
+            .tickFormat(d3.timeFormat('%H:%M'))
+            .ticks(d3.timeHour.every(1));
 
 
 
@@ -187,7 +189,7 @@
         let aver_speed_offsets = svg.append("g")
             .attr("class", "governments")
             .attr("clip-path", "url(#clipAxes)");
-//        绘制面积图上的线条,用aver_speed_offsets的原因是防止超出边界
+//        绘制面积图上的线条,
         let deficit_line=svg.append("path")
                         .attr("class", "surplus-deficit-line");
         let gXaxis=svg.append("g")
@@ -228,7 +230,7 @@
                 })
                 .attr("height", height)
                 .attr("fill", function(d) {
-                    console.log(d.areaColor)
+//                    console.log(d.areaColor)
                     return d.areaColor;
                 })
                 .attr("mask", "url(#deficitMask)")
@@ -268,133 +270,16 @@
 
 
         function ready(error, data) {
-
             dataSpan=data;
-//            d3.interval
-            let interval=d3.interval(intervalTimeLine,intervalTimer)
+            let interval=d3.interval(intervalTimeLine,intervalTimer);
+//            interval.
 
-
-
-
-//
-//
-//
-//            console.log(data);
-////        console.log(govs);
-//            let dataInterval=d3.pairs(data).map(x=>{return {areaColor:areaLinearGradient(x[0].aver_speed_offset),startDate:x[0].daydatetime,endDate:x[1].daydatetime}});
-//            if (error) throw error;
-//
-//            x.domain(d3.extent(data, function(d) { return d.daydatetime; }));
-//
-//            y.domain([0,0.7]);
-//
-//            dataInterval = dataInterval.filter(function(g) {
-//                return g.startDate < x.domain()[1];
-//            });
-//
-//            area.y0(y(0));
-//
-//            defs.append("mask")
-//                .attr("id", "deficitMask")
-//                .append("path")
-//                .attr("d", function() {
-//                    return area(data);
-//                })
-//                .attr("fill", "white")
-//                .attr("opacity", 1);
-//
-//            defs.append("clipPath")
-//                .attr("id", "clipAxes")
-//                .append("rect")
-//                .attr("width", width)
-//                .attr("height", height);
-//
-//            var governments = svg.append("g")
-//                .attr("class", "governments")
-//                .attr("clip-path", "url(#clipAxes)");
-//
-//            governments.selectAll("rect")
-//                .data(dataInterval)
-//                .enter().append("rect")
-//                .attr("x", function(d) {
-//                    return x(d.startDate);
-//                })
-//                .attr("y", 0)
-//                .attr("width", function(d, i) {
-//                    return x(d.endDate) - x(d.startDate) + 0.2;
-//                })
-//                .attr("height", height)
-//                .attr("fill", function(d) {
-//                    return d.areaColor;
-//                })
-//                .attr("mask", "url(#deficitMask)")
-//                .on("mouseover", function(d) {
-//                    showLabel(d);
-//                })
-//                .on("mouseout", function() {
-//                    // should think of a better way of doing this
-//                    // ideally should be showing/hiding not appending/removing
-//                    d3.select(".annotation-group").remove();
-//                })
-//
-//            svg.append("path")
-//                .datum(data)
-//                .attr("class", "surplus-deficit-line")
-//                .attr("d", line)
-//
-//            svg.append("g")
-//                .attr("class", "x axis")
-//                .attr("transform", "translate(0," + height + ")")
-//                .call(xAxis);
-//
-//            svg.append("text")
-//                .attr("class", "title")
-//                .attr("transform", "translate(" + width / 2 + ",0)")
-//                .attr("dy", "-2em")
-//                .attr("text-anchor", "middle")
-//                .text("UK government deficit / surplus as percentage of GDP");
-//
-//            svg.append("g")
-//                .attr("class", "y axis")
-//                .call(yAxis);
-//
-//            function showLabel(g) {
-//                var annotations = [{
-//                    note: {
-//                        label: g.leader,
-//                        title: g.party
-//                    },
-//                    data: {
-//                        start: g.startDate,
-//                        end: g.endDate,
-//                    },
-//                    subject: {
-//                        x1: x(g.startDate),
-//                        x2: x(g.endDate)
-//                    },
-//                    dy: -50,
-//                    dx: 10
-//                }]
-//
-//                var makeAnnotations = d3.annotation()
-//                    .type(d3.annotationXYThreshold)
-//                    .accessors({
-//                        x: function(d) {
-//                            return (x(d.start) + x(d.end)) / 2;
-//                        },
-//                        y: function() {
-//                            return y(0);
-//                        }
-//                    })
-//                    .annotations(annotations);
-//
-//                var annotationsGroup = svg.append("g")
-//                    .attr("class", "annotation-group")
-//                    .call(makeAnnotations);
-//            }
 
         }
 
     </script>
 </div>
 </body>
+
+
+<!--颜色06152a-->
