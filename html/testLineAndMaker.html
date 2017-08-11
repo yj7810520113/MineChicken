@@ -521,17 +521,32 @@ d3.csv('../data/data_offset3.3.csv',function(error,data){
 //    var  sequentialScale=d3.scaleBand()
 //        .domain([-1,0,0.2,0.55,0.7,1])
 //        .range(['#42bd41','#f ff176','#ffb74d','#ff8a65','#e84e40'])
+//
+//    function sequentialScale(x) {
+//        if(x<=0){
+//            return '#42bd41';
+//        }
+//        else if(x<=0.2)
+//            return '#fff176';
+//        else if(x<=0.55)
+//            return '#ffb74d';
+//        else if(x<=0.7)
+//            return '#ff8a65';
+//        else if(x<=1){
+//            return '#e84e40';
+//        }
+//    }
 
     function sequentialScale(x) {
         if(x<=0){
             return '#42bd41';
         }
         else if(x<=0.2)
-            return '#fff176';
+            return '#42bd41';
         else if(x<=0.55)
-            return '#ffb74d';
+            return '#fff176';
         else if(x<=0.7)
-            return '#ff8a65';
+            return '#ffb74d';
         else if(x<=1){
             return '#e84e40';
         }

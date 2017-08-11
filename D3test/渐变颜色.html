@@ -24,13 +24,95 @@
             </linearGradient>
 
         </defs>
-
-        <rect x="20" y="20" width="400" height="10"/>
+        <!--<rect id="rect1" x="20" y="80" width="400" height="40"/>-->
+        <!--<rect id="rect2" x="20" y="20" width="400" height="10"/>-->
     </svg>
 </div>
 <script>
+//    <!--本地化-->
+    var zh = d3.timeFormatLocale({
+        decimal: ".",
+        thousands: ",",
+        grouping: [3],
+        currency: ["¥", ""],
+        dateTime: "%a %b %e %X %Y",
+        date: "%Y/%-m/%-d",
+        time: "%H:%M:%S",
+        periods: ["上午", "下午"],
+        days: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
+        shortDays: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
+        months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+        shortMonths: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
+    });
+
+
 
 let svg=d3.select('svg');
+let marginTop=30;
+let gMargin=10;
+let marginLeft=30;
+let plotWidth=400;
+let areaHeight=40;
+let gradientHeight=10;
+let textLabelParse=d3.timeParse('%Y-%m-%d %H:%M:%S');
+let textLabelFormat=d3.timeFormat('%m-%d %w')
+let timeFormat=d3.timeFormat('%H:%M:%S');
+var parseDate = d3.timeParse('%H:%M:%S');
+console.log(parseDate(timeFormat(new Date())));
+//渐变色比例尺
+let gradientMapXScale = d3.scaleLinear()
+    .domain([0,30*24])
+    .range(["0%", "100%"]);
+let gradientMapColorScale = d3.scaleLinear()
+    .interpolate(d3.interpolateLab)
+    .domain([0, 0.2,0.55,0.7,1])
+    .range(['#42bd41','#42bd41','#ffb74d','#ff8a65','#e84e40']);
+let defs=d3.select('svg').append('defs');
+//area图比例尺
+
+function sequentialIndexScale(x) {
+
+
+//    if(x<=0){
+//        return '#42bd41';
+//    }
+//    else if(x<=0.2)
+//        return '#42bd41';
+//    else if(x<=0.55)
+//        return '#fff176';
+//    else if(x<=0.7)
+//        return '#ffb74d';
+//    else if(x<=1){
+//        return '#e84e40';
+//    }
+
+    if(x==0)
+        return '#42bd41';
+    else if(x==1)
+        return '#fff176';
+    else if(x==2)
+        return '#ffb74d';
+    else if(x==3){
+        return '#e84e40';
+    }
+}
+var timeXScale = d3.scaleTime()
+    .range([0, plotWidth])
+    .domain([parseDate('00:00:00'),parseDate('23:58:00')]);
+
+let areaNormalYScale=d3.scaleLinear()
+    .domain([0,0.2])
+    .range([areaHeight,0]);
+let areaClearYScale=d3.scaleLinear()
+    .domain([0.2,0.55])
+    .range([areaHeight,0]);
+let areaBusyYScale=d3.scaleLinear()
+    .domain([0.55,0.7])
+    .range([areaHeight,0]);
+let areaVeryBusyYScale=d3.scaleLinear()
+    .domain([0.7,1])
+    .range([areaHeight,0]);
+let areaYScales=[areaNormalYScale,areaClearYScale,areaBusyYScale,areaVeryBusyYScale];
 
 function parseAreaDatas(d){
     //        console.log(d3.timeFormat('%Y-%m-%d %H-%M-%S').format(d.daydatetime));
@@ -42,34 +124,189 @@ function parseAreaDatas(d){
 }
 
 d3.queue()
-    .defer(d3.csv, "渐变颜色.csv", parseAreaDatas)
+    .defer(d3.csv, "渐变颜色1.csv", parseAreaDatas)
+    .defer(d3.csv, "渐变颜色2.csv", parseAreaDatas)
+    .defer(d3.csv, "渐变颜色3.csv", parseAreaDatas)
+    .defer(d3.csv, "渐变颜色4.csv", parseAreaDatas)
+    .defer(d3.csv, "渐变颜色5.csv", parseAreaDatas)
+    .defer(d3.csv, "渐变颜色6.csv", parseAreaDatas)
+    .defer(d3.csv, "渐变颜色7.csv", parseAreaDatas)
     //        .defer(d3.csv, "budget-deficit-gdp.csv", parseBudgetDeficit)
     //        .defer(d3.csv, "governments.csv", parseGovernments)
     .await(ready);
-function ready(error, data) {
-    let length=data.length;
-    console.log(data);
+function ready(error, data1,data2,data3,data4,data5,data6,data7) {
+    console.log([data1,data2,data3,data4,data5,data6,data7]);
+    render([data4,data3,data2,data1,data5,data6,data7])
+////---------------------------绘制面积图
+//    let areaXScale_normal=d3.scaleLinear()
+//        .domain([])
+//
+////---------------------------绘制渐变色
+//    let delayMapXScale = d3.scaleLinear()
+//        .domain([0,length])
+//        .range(["0%", "100%"]);
+//    let delayMapColorScale = d3.scaleLinear()
+//        .interpolate(d3.interpolateLab)
+//        .domain([0, 0.2,0.55,0.7,1])
+//        .range(['#42bd41','#42bd41','#ffb74d','#ff8a65','#e84e40']);
+//
+//
+//
+//    d3.select('#normalLinear').selectAll('stop')
+//        .data(data)
+//        .enter()
+//        .append("svg:stop")
+//        .attr("offset", function (d,i) { return delayMapXScale(i); })
+//        .attr("stop-color", function (d) { return delayMapColorScale(d.aver_speed_offset); })
+//        .attr("stop-opacity", 1);
+//    d3.select('#rect2').attr('fill','url(#normalLinear)')
 
-
-
-    var delayMapXScale = d3.scaleLinear()
-        .domain([0,length])
-        .range(["0%", "100%"]);
-    var delayMapColorScale = d3.scaleLinear()
-        .interpolate(d3.interpolateLab)
-        .domain([0, 0.2,0.55,0.7,1])
-        .range(['#42bd41','#42bd41','#ffb74d','#ff8a65','#e84e40']);
-
-
-    d3.select('#normalLinear').selectAll('stop')
-        .data(data)
+}
+function render(datas){
+//    每一块area和gradient作为一个g区域
+    console.log(d3.max(datas[0],x=>x.aver_speed_offset));
+    
+    let gRowN=svg.selectAll('g')
+        .data(datas)
         .enter()
-        .append("svg:stop")
-        .attr("offset", function (d,i) { return delayMapXScale(i); })
-        .attr("stop-color", function (d) { return delayMapColorScale(d.aver_speed_offset); })
-        .attr("stop-opacity", 1);
-    d3.select('rect').attr('fill','url(#normalLinear)')
+        .append('g')
+        .attr('transform',function(d,i){return 'translate(0,'+(areaHeight+gradientHeight+gMargin)*i+')'});
 
+    //---------------------------绘制渐变色
+//    添加渐变色
+    let linearGragientN=defs.selectAll('linearGradient')
+        .data(datas)
+        .enter()
+        .append('linearGradient')
+        .attr('id',function(d,i){
+            return 'dailyLinearGradient'+i;
+        })
+        .attr('x1','0%')
+        .attr('y1','0%')
+        .attr('x2','100%')
+        .attr('y2','0%')
+        .attr('spreadMethod','pad');
+    linearGragientN.selectAll('stop')
+            .data(function (d) {
+                return d
+            })
+            .enter()
+        .append('stop')
+        .attr("offset", function (d,i) { return gradientMapXScale(i); })
+        .attr("stop-color", function (d) { return gradientMapColorScale(d.aver_speed_offset); })
+        .attr("stop-opacity", 1);
+
+    
+//绘制渐变色填充的矩形
+    let gradientRect=gRowN
+        .append('rect')
+        .attr('x',marginLeft)
+        .attr('y',function (d,i) {
+            return areaHeight;
+        })
+        .attr('height',gradientHeight)
+        .attr('width',plotWidth)
+        .attr('fill',function (d,i) {
+            return 'url(#dailyLinearGradient'+i+')';
+        });
+    console.log(gradientRect._groups);
+    console.log(d3.select(gradientRect._groups[0][1]).attr('fill'));
+//    添加时间刻度
+    var xAxis = d3.axisBottom()
+        .scale(timeXScale)
+        .tickFormat(d3.timeFormat('%H'))
+        .ticks(d3.timeHour.every(1));
+    gRowN.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate('+marginLeft+',' + ((areaHeight+gradientHeight+gMargin)*(datas.length-1)+(areaHeight+gradientHeight))+ ')')
+        .call(xAxis);
+
+
+//    -----------------------------------------绘制area图
+//    添加clippath
+    gRowN.append('clipPath')
+        .attr('id','areaClipPath')
+        .append('rect')
+        .attr('x',0)
+        .attr('y',0)
+        .attr('height',areaHeight-2)
+        .attr('width',plotWidth);
+    let areaPlotN=gRowN.append('g')
+        .attr('transform','translate('+marginLeft+','+'0)');
+
+
+//    console.log(areaPlotN.data(function (d) {
+//        return d;
+//    }));
+    console.log(areaPlotN);
+    console.log(areaPlotN._groups[0]);
+    areaPlotN._groups[0].forEach(function (d1) {
+
+        areaYScales.forEach(function (d2,i2) {
+            let area = d3.area()
+                .x(function (d) {
+                    return timeXScale(parseDate(d.daydatetime.substr(11,20)));
+                })
+                .y0(function () {
+                    return areaYScales[i2](0);
+                })
+                .y1(function (d) {
+//                    console.log(d.daydatetime+","+d2.domain()[0]+","+(d.aver_speed_offset-d2.domain()[0]));
+//                    console.log(i2+","+d2(d.aver_speed_offset)+",");
+                    return d2(d.aver_speed_offset);
+                });
+            d3.select(d1).append('path')
+                .attr('d',function(){
+                    console.log(d1.__data__);return area(d1.__data__)})
+                .style('fill',sequentialIndexScale(i2))
+                .attr('clip-path','url(#areaClipPath)')
+        })
+
+
+    });
+    //    添加日期标志
+    let labelFormat=zh.format("%Y年%b %A");
+    areaPlotN.append('text')
+        .attr('x','-20')
+        .attr('y',20)
+        .text(function (d) {
+            return labelFormat((textLabelParse(d[0].daydatetime)));
+        })
+//    areaPlotN.append('path')
+//        .attr('d',(d)=>{
+//            areaYScales.forEach(function (yScale) {
+//                let area = d3.area()
+//                    .x(function (d) {
+//                        console.log(x(parseDate(d.daydatetime)));
+//                        return x(parseDate(d.daydatetime))
+//                    })
+//                    .y0(function (d) {
+//                        return 0
+//                    })
+//                    .y1(function (d) {
+//                        return areaYScales[0](d.aver_speed_offset)
+//                    });
+//
+//            })
+//
+//        });
+//    areaYScales.forEach(function (yScale) {
+//        let area=d3.area()
+//            .x(function(d){return x(parseDate(d.daydatetime))})
+//            .y0(function(d){return 0})
+//            .y1(function(d){return yScale(d.aver_speed_offset)});
+//        areaPlotN.append('path')
+//            .attr('d',function(d){return area(d)})
+//            .attr('fill','#ABEDD8')
+//    });
+//    var area_data = d3.area()
+//        .x(function(d) {return x(d.x);	})
+//        .y0(function(d) {return y(d.low);	})
+//        .y1(function(d) {return y(d.high);	});
+//    var area = area_data(area1);
+//    svg.append('path')
+//        .attr('d', area)
+//        .style("fill", "#ABEDD8");
 }
 
 </script>
