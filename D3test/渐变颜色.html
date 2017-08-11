@@ -19,11 +19,7 @@
     <span style="text-align: center;color: rgba(233,30,99,1);font-size: 30px;position:absolute;top: 100px;left:500px;" id="dayTime"></span>
 
     <svg height="900px" width="1300px" style="margin-left: 100px;margin-top: 100px;background:rgba(63,94,181,0.9);">
-        <defs>
-            <linearGradient id="normalLinear" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="pad">
-            </linearGradient>
 
-        </defs>
         <!--<rect id="rect1" x="20" y="80" width="400" height="40"/>-->
         <!--<rect id="rect2" x="20" y="20" width="400" height="10"/>-->
     </svg>
@@ -49,7 +45,7 @@
 
 let svg=d3.select('svg');
 let marginTop=30;
-let gMargin=10;
+let gMargin=5;
 let marginLeft=30;
 let plotWidth=400;
 let areaHeight=40;
@@ -58,7 +54,6 @@ let textLabelParse=d3.timeParse('%Y-%m-%d %H:%M:%S');
 let textLabelFormat=d3.timeFormat('%m-%d %w')
 let timeFormat=d3.timeFormat('%H:%M:%S');
 var parseDate = d3.timeParse('%H:%M:%S');
-console.log(parseDate(timeFormat(new Date())));
 //渐变色比例尺
 let gradientMapXScale = d3.scaleLinear()
     .domain([0,30*24])
@@ -99,6 +94,10 @@ function sequentialIndexScale(x) {
 var timeXScale = d3.scaleTime()
     .range([0, plotWidth])
     .domain([parseDate('00:00:00'),parseDate('23:58:00')]);
+var xAxis = d3.axisBottom()
+    .scale(timeXScale)
+    .tickFormat(d3.timeFormat('%H'))
+    .ticks(d3.timeHour.every(1));
 
 let areaNormalYScale=d3.scaleLinear()
     .domain([0,0.2])
@@ -135,7 +134,6 @@ d3.queue()
     //        .defer(d3.csv, "governments.csv", parseGovernments)
     .await(ready);
 function ready(error, data1,data2,data3,data4,data5,data6,data7) {
-    console.log([data1,data2,data3,data4,data5,data6,data7]);
     render([data4,data3,data2,data1,data5,data6,data7])
 ////---------------------------绘制面积图
 //    let areaXScale_normal=d3.scaleLinear()
@@ -164,8 +162,7 @@ function ready(error, data1,data2,data3,data4,data5,data6,data7) {
 }
 function render(datas){
 //    每一块area和gradient作为一个g区域
-    console.log(d3.max(datas[0],x=>x.aver_speed_offset));
-    
+
     let gRowN=svg.selectAll('g')
         .data(datas)
         .enter()
@@ -209,16 +206,16 @@ function render(datas){
         .attr('fill',function (d,i) {
             return 'url(#dailyLinearGradient'+i+')';
         });
-    console.log(gradientRect._groups);
-    console.log(d3.select(gradientRect._groups[0][1]).attr('fill'));
+
 //    添加时间刻度
-    var xAxis = d3.axisBottom()
-        .scale(timeXScale)
-        .tickFormat(d3.timeFormat('%H'))
-        .ticks(d3.timeHour.every(1));
-    gRowN.append('g')
+//    只需要在最后一个添加坐标轴就好了
+
+    gRowN.filter(function(d,i){
+        console.log(i);
+        return i==(datas.length-1)?true:false;
+    }).append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate('+marginLeft+',' + ((areaHeight+gradientHeight+gMargin)*(datas.length-1)+(areaHeight+gradientHeight))+ ')')
+        .attr('transform', 'translate('+marginLeft+',' + ((areaHeight+gradientHeight))+ ')')
         .call(xAxis);
 
 
@@ -238,7 +235,6 @@ function render(datas){
 //    console.log(areaPlotN.data(function (d) {
 //        return d;
 //    }));
-    console.log(areaPlotN);
     console.log(areaPlotN._groups[0]);
     areaPlotN._groups[0].forEach(function (d1) {
 
@@ -257,7 +253,7 @@ function render(datas){
                 });
             d3.select(d1).append('path')
                 .attr('d',function(){
-                    console.log(d1.__data__);return area(d1.__data__)})
+                    return area(d1.__data__)})
                 .style('fill',sequentialIndexScale(i2))
                 .attr('clip-path','url(#areaClipPath)')
         })
@@ -266,7 +262,7 @@ function render(datas){
     });
     //    添加日期标志
     let labelFormat=zh.format("%Y年%b %A");
-    areaPlotN.append('text')
+    areaPlotN.append('g').append('text')
         .attr('x','-20')
         .attr('y',20)
         .text(function (d) {
