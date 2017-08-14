@@ -1,0 +1,91 @@
+<!--
+ * Created by WebStorm
+ * User:maomao,http://www.mmcode.top
+ * Date:2017/8/14
+ * Time:10:26
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../assets/js/D3.V4.js"></script>
+
+</head>
+<body>
+<svg height="500px" width="500px"></svg>
+</body>
+<script>
+    data=[{"x":"a","y":0},{"x":"b","y":20},{"x":"c","y":50},{"x":"d","y":100}];
+var xScale=d3.scaleOrdinal()
+    .domain(['a','b','c','d'])
+    .range([0,50,150,200]);
+var yScale=d3.scaleLinear()
+    .domain([0,100])
+    .range([0,400]);
+var line=d3.line()
+    .x(d=>xScale(d.x))
+    .y(d=>yScale(d.y));
+var subline=d3.select('svg #subline');
+d3.select('svg')
+    .on('mousemove',function(){
+    var x = d3.mouse(this)[0];
+
+    console.log(d3.mouse(this));
+        var leftEdges=xScale.range();
+//        var leftEdgesWidth=xScale.bandwidth();
+//        console.log(leftEdgesWidth);
+//        console.log(leftEdges);
+           var j;
+        for(j=0; xScale.range()[j]+(xScale.range()[j+1]-xScale.range()[j])/2<x; j++) {
+//            console.log(x);
+        }
+//        console.log(xScale.domain()[j]);
+//        var bisectDate = d3.bisector(function (d) {
+//            return d.x;
+//        }).left;
+//        var i = bisectDate(d, x, 0);
+//        console.log(i)
+        if(subline.empty()){
+            subline=d3.select('svg')
+                .append('line')
+                .attr('id','subline')
+                .attr('y1',0)
+                .attr('x1',xScale.range()[j])
+                .attr('y2',500)
+                .attr('x2',xScale.range()[j])
+                .attr('stroke','black')
+                .attr('stroke-width',2);
+        }
+        else {
+            subline=d3.select('svg #subline');
+            subline.transition()
+                .duration(100)
+                .ease(d3.easeLinear)
+                .attr('y1',0)
+                .attr('x1',xScale.range()[j])
+                .attr('y2',500)
+                .attr('x2',xScale.range()[j])
+                .attr('stroke','black')
+                .attr('stroke-width',2);
+        }
+
+    })
+var linePlot=d3.select('svg')
+    .append("path")
+    .datum(data)
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-linejoin", "round")
+    .attr("stroke-linecap", "round")
+    .attr("stroke-width", 1.5)
+    .attr('d',line)
+    .on("mouseover",function (d) {
+//        console.log(d)
+        console.log(this);
+
+    })
+
+</script>
+</html>
