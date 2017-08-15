@@ -201,7 +201,7 @@
             currentCursor+=1000*60*2;
             console.log(new Date(currentCursor));
             let data=dataSpan;
-            x.domain([currentCursor-1000*60*60*3,currentCursor+1000*60*60*3]);
+            x.domain([currentCursor-1000*60*60*6,currentCursor+1000*60*60*6]);
             y.domain([0,0.7]);
             area.y0(y(0));
             let nowSpan=data.filter((g)=>{
@@ -245,6 +245,7 @@
             gXaxis.call(xAxis);
 
 
+//            console.log(nowSpan);
             deficit_line.datum(nowSpan)
                 .attr("d", line);
 //            svg.append("path")
