@@ -195,7 +195,8 @@ function render(datas){
 
     
 //绘制渐变色填充的矩形
-    let gradientRect=gRowN
+    console.log(gRowN);
+    let gradientRect=gRowN.enter()
         .append('rect')
         .attr('x',marginLeft)
         .attr('y',function (d,i) {

@@ -459,12 +459,28 @@
 
 //stroke-linecap="round" stroke="#000000" stroke-width="5" marker-start="url(#arrow)"
 //给路段赋初始宽度值
+d3.csv('../data/gy_contest_link_info_short.txt', function (d) {
+    console.log(d);
+    d.forEach(function (d1) {
+        d1['link_id']=d1['link_id'].replace(/\d{9}(\d{4})\d{6}/,'$1');
+    });
+    let str='';
+    d.forEach(d1=>{
+        console.log(d1);
+//        str+=d1[0]+d1[1];
+        str+=d1;
+    });
+    console.log(str);
+});
+
 let roadMap=new Map();
+let lengthMap=new Map();
 $.get('../data/gy_contest_link_info.txt', function (d) {
     var ls = d.split('\n');
     for (let eles of ls) {
         var ele = eles.split(';');
         roadMap.set(ele[0].replace(/\d{9}(\d{4})\d{6}/,'$1'),ele[2]);
+        lengthMap.set(ele[0].replace(/\d{9}(\d{4})\d{6}/,'$1'),ele[1])
     }
     $('g').each(function(d){
 //        console.log(this);
@@ -476,6 +492,9 @@ $.get('../data/gy_contest_link_info.txt', function (d) {
             $(this).children(':first').attr("stroke-width",roadMap.get(id));
             $(this).children(':first').attr("marker-start","url(#arrow)");
             $(this).children(':first').attr("marker-end","url(#roadEnd)");
+            d3.select(this).on('click',()=>{
+                console.log(lengthMap.get(id));
+            })
         }
 
     })
@@ -509,7 +528,7 @@ d3.csv('../data/data_offset3.3.csv',function(error,data){
         .key(function(d) { return d.time; })
         .sortKeys(d3.ascending)
         .entries(data);
-    console.log(sortByKey)
+//    console.log(syortBKey)
 
     let count=0
 
@@ -554,22 +573,26 @@ d3.csv('../data/data_offset3.3.csv',function(error,data){
 
     console.log(sequentialScale(0.9))
 //    console.log(sequentialScale-(10))
-//    setInterval(function () {
-//        $('#dayTime').text((sortByKey[count])['key']);
-//        (sortByKey[count])['values'].forEach(function (d,i) {
-//                let link_id=d['link_id'].substring(0,1)+"_"+d['link_id'].substring(1,4);
-////            console.log(link_id)
-////            $(this).children(':first').attr("stroke-linecap","butt");
-////                $('g[id*="'+link_id+'"]').children(':first').attr("stroke",sequentialScale(d['speed']));
-////            console.log(d3.select('g[id*="'+link_id+'"]'));
-//            var t = d3.transition()
-//                .duration(300)
-//                .ease(d3.easeExpInOut);
-//                d3.select('g[id*="'+link_id+'"] >line').transition(t).attr('stroke',sequentialScale(d['speed']))
-//            })
-////        console.log(count);
-//        count++;
-//    },300)
+        setInterval(function () {
+            $('#dayTime').text((sortByKey[count])['key']);
+            (sortByKey[count])['values'].forEach(function (d,i) {
+                    let link_id=d['link_id'].substring(0,1)+"_"+d['link_id'].substring(1,4);
+    //            console.log(link_id)
+    //            $(this).children(':first').attr("stroke-linecap","butt");
+    //                $('g[id*="'+link_id+'"]').children(':first').attr("stroke",sequentialScale(d['speed']));
+    //            console.log(d3.select('g[id*="'+link_id+'"]'));
+                var t = d3.transition()
+                    .duration(300)
+                    .ease(d3.easeExpInOut);
+                    d3.select('g[id*="'+link_id+'"] >line').transition(t).attr('stroke',sequentialScale(d['speed']))
+                d3.select('g[id*="'+link_id+'"] >line').on('click',function () {
+//                    console.log(d3.select(this));
+//                    d3.select(this).text(d['speed'])
+                })
+                })
+    //        console.log(count);
+            count++;
+        },300)
 
 
 

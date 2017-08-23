@@ -1,0 +1,145 @@
+<!--
+ * Created by WebStorm
+ * User:maomao,http://www.mmcode.top
+ * Date:2017/8/18
+ * Time:10:53
+ -->
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .bar {
+        fill: steelblue;
+    }
+
+    .bar:hover {
+        fill: brown;
+    }
+
+    .axis--x path {
+        display: none;
+    }
+
+</style>
+<svg width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+    var svg = d3.select("svg"),
+        margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom;
+
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+        y = d3.scaleLinear().rangeRound([height, 0]);
+
+    var g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+   var g1;
+    let i=0;
+    let data1=[];
+    let data2=[];
+    for(let i=0;i<10;i++){
+        data1.push({
+            letter:Math.random()*100,
+            frequency:Math.random()*100
+        })
+    }
+    for(let i=0;i<100;i++){
+        data2.push({
+            letter:Math.random()*100,
+            frequency:Math.random()*100
+        })
+    }
+    test(data1)
+    setInterval(()=>test1((i++)%2==0?data1:data2),1000)
+
+function test(data) {
+//        if (error) throw error;
+//    console.log(data);
+//    data.pop();
+//    data.push({
+//        letter:Math.random()*100,
+//        frequency:Math.random()*50
+//    });
+
+    console.log(data);
+        x.domain(data.map(function(d) { return d.letter; }));
+        y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+
+        g.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        g.append("g")
+            .attr("class", "axis axis--y")
+            .call(d3.axisLeft(y).ticks(10, "%"))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .attr("text-anchor", "end")
+            .text("Frequency");
+
+       g1= svg.selectAll("rect")
+            .data(data);
+
+
+
+    g1.enter().append("rect")
+        .merge(g1)
+            .attr("class", "bar")
+            .attr("x", function(d) {return x(d.letter); })
+            .attr("y", function(d) { return y(d.frequency); })
+            .attr("width", x.bandwidth())
+            .attr("height", function(d) { return height - y(d.frequency); });
+    g1.exit().remove();
+
+    }
+    function test1(data) {
+//        if (error) throw error;
+//    console.log(data);
+//    data.pop();
+//    data.push({
+//        letter:Math.random()*100,
+//        frequency:Math.random()*50
+//    });
+
+        console.log(data);
+        x.domain(data.map(function(d) { return d.letter; }));
+        y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+
+        g.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        g.append("g")
+            .attr("class", "axis axis--y")
+            .call(d3.axisLeft(y).ticks(10, "%"))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "0.71em")
+            .attr("text-anchor", "end")
+            .text("Frequency");
+
+        g1= svg.selectAll("rect")
+            .data(data);
+
+
+
+        g1.enter().append("rect")
+//            .merge(g1)
+            .attr("class", "bar")
+            .attr("x", function(d) {return x(d.letter); })
+            .attr("y", function(d) { return y(d.frequency); })
+            .attr("width", x.bandwidth())
+            .attr("height", function(d) { return height - y(d.frequency); });
+        g1.exit().remove();
+
+    }
+
+</script>
